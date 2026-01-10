@@ -1,23 +1,37 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
+project(NeuralNetwork LANGUAGES CXX CUDA)
 
-project(neuralnetwork
-    VERSION 0.1
-    LANGUAGES CXX
-)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CUDA_STANDARD 14)
 
-# Use modern C++
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# Find CUDA
+find_package(CUDA REQUIRED)
 
-# Create the executable
-add_executable(neuralnetwork
-    src/main.cpp
+# Include directories
+include_directories(include)
+
+# CPU-only library
+add_library(nn_cpu
+    src/tensor.cpp
+    src/layers.cpp
     src/nn.cpp
 )
 
-# Tell the compiler where headers live
-target_include_directories(neuralnetwork
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
+# GPU library
+add_library(nn_gpu
+    src/cuda/cuda_tensor.cu
+    src/cuda/kernels.cu
+    src/cuda/layers_gpu.cu
 )
+
+set_target_properties(nn_gpu PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_ARCHITECTURES 75  # Change based on your GPU
+)
+
+# Executables
+add_executable(mnist_cpu examples/mnist_cpu.cpp)
+target_link_libraries(mnist_cpu nn_cpu)
+
+add_executable(mnist_gpu examples/mnist_gpu.cpp)
+target_link_libraries(mnist_gpu nn_cpu nn_gpu)
