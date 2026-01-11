@@ -2,6 +2,7 @@
 #include "cuda/kernels.cuh"
 #include <cuda_runtime.h>
 #include <stdio.h>
+#include <vector>
 
 #define TILE_SIZE 16
 #define BLOCK_SIZE 256
