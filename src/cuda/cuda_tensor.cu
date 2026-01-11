@@ -1,6 +1,7 @@
 // src/cuda/cuda_tensor.cu
 #include "cuda/cuda_tensor.cuh"
 #include <iostream>
+#include <vector>
 
 namespace cuda {
 
